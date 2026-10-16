@@ -2,37 +2,17 @@ import java.io.*;
 import java.util.*;
 import java.util.stream.*;
 
-/*
- * University Grade & Attendance Tracker
- *
- * Topics covered (see comments tagged [Wx]):
- *  - Data types & shell      : primitives, Scanner console input, formatted output
- *  - Selection (W3)          : if/else, switch
- *  - Iteration (W4)          : for, while, do-while, enhanced for
- *  - Methods & recursion (W5): helper methods, recursive sum
- *  - Arrays (W6)             : 1-D (attendance) and 2-D (marks) arrays
- *  - OOP                     : classes, objects, encapsulation
- *  - Inheritance/Interfaces  : Person -> Student, Reportable interface
- *  - Exceptions              : custom checked exception, try/catch/finally
- *  - Strings                 : split, trim, format, toUpperCase, StringBuilder
- *  - Files                   : read/write CSV with try-with-resources
- *  - Collections             : ArrayList, HashMap
- *  - Streams                 : filter, map, sorted, groupingBy, averaging
- */
 
-// ---------- Interface ----------
 interface Reportable {
     String report();
 }
 
-// ---------- Custom exception ----------
 class InvalidInputException extends Exception {
     public InvalidInputException(String message) {
         super(message);
     }
 }
 
-// ---------- Base class (Inheritance) ----------
 abstract class Person {
     protected final String id;
     protected final String name;
@@ -48,15 +28,15 @@ abstract class Person {
     abstract String role();
 }
 
-// ---------- Student ----------
+
 class Student extends Person implements Reportable {
     static final String[] SUBJECTS = {"Java", "Maths", "Physics", "English"};
-    static final int COMPONENTS = 2;          // 0 = internal, 1 = external
-    static final int MAX_PER_COMPONENT = 50;  // each subject is out of 100
+    static final int COMPONENTS = 2;          
+    static final int MAX_PER_COMPONENT = 50;  
 
-    private final int[][] marks = new int[SUBJECTS.length][COMPONENTS]; // 2-D array
-    private final int[] attended = new int[SUBJECTS.length];            // 1-D array
-    private final int[] held = new int[SUBJECTS.length];                // 1-D array
+    private final int[][] marks = new int[SUBJECTS.length][COMPONENTS]; 
+    private final int[] attended = new int[SUBJECTS.length];            
+    private final int[] held = new int[SUBJECTS.length];                
 
     Student(String id, String name) {
         super(id, name);
@@ -105,14 +85,14 @@ class Student extends Person implements Reportable {
         return sum;
     }
 
-    // [W5] Recursion: total of all subjects
+    
     int totalMarks() {
         return sumFrom(0);
     }
 
     private int sumFrom(int subject) {
-        if (subject == SUBJECTS.length) return 0;           // base case
-        return subjectTotal(subject) + sumFrom(subject + 1); // recursive case
+        if (subject == SUBJECTS.length) return 0;           
+        return subjectTotal(subject) + sumFrom(subject + 1); 
     }
 
     double percentage() {
@@ -128,7 +108,7 @@ class Student extends Person implements Reportable {
         return h == 0 ? 0.0 : a * 100.0 / h;
     }
 
-    // [W3] Selection
+    
     static String gradeFor(double pct) {
         if (pct >= 90) return "O";
         else if (pct >= 80) return "A+";
@@ -157,7 +137,7 @@ class Student extends Person implements Reportable {
         return attendancePercent() < 75.0;
     }
 
-    // [Strings] Formatted report with StringBuilder
+   
     @Override
     public String report() {
         StringBuilder sb = new StringBuilder();
@@ -180,7 +160,7 @@ class Student extends Person implements Reportable {
         return sb.toString();
     }
 
-    // [Files] CSV: id,name,8 marks,4 attended,4 held
+    
     String toCsv() {
         StringBuilder sb = new StringBuilder();
         sb.append(id).append(',').append(name);
@@ -220,10 +200,10 @@ class Student extends Person implements Reportable {
     }
 }
 
-// ---------- Tracker: collections + streams + files ----------
+
 class Tracker {
-    private final List<Student> students = new ArrayList<>();         // Collections
-    private final Map<String, Student> byId = new HashMap<>();        // Collections
+    private final List<Student> students = new ArrayList<>();         
+    private final Map<String, Student> byId = new HashMap<>();        
 
     void add(Student s) throws InvalidInputException {
         if (byId.containsKey(s.getId())) {
@@ -249,7 +229,7 @@ class Tracker {
         }
     }
 
-    // ----- Streams -----
+    
     void analytics() {
         if (students.isEmpty()) {
             System.out.println("No students yet.");
@@ -296,7 +276,7 @@ class Tracker {
         }
     }
 
-    // ----- Files -----
+    
     void save(String path) throws IOException {
         try (PrintWriter out = new PrintWriter(new FileWriter(path))) {
             for (Student s : students) out.println(s.toCsv());
@@ -328,7 +308,7 @@ class Tracker {
     }
 }
 
-// ---------- Main (shell / menu) ----------
+
 public class Project {
     private static final Scanner sc = new Scanner(System.in);
     private static final String DATA_FILE = "students.csv";
@@ -337,7 +317,7 @@ public class Project {
         Tracker tracker = new Tracker();
         int choice;
 
-        // [W4] do-while menu loop
+        
         do {
             printMenu();
             choice = readInt("Choose an option: ");
@@ -393,7 +373,7 @@ public class Project {
 
     static void enterMarks(Tracker t) throws InvalidInputException {
         Student s = t.find(readLine("Student ID: "));
-        // [W4] for loop over subjects
+        
         for (int i = 0; i < Student.SUBJECTS.length; i++) {
             System.out.println("Subject: " + Student.SUBJECTS[i]);
             int in = readInt("  Internal (0-" + Student.MAX_PER_COMPONENT + "): ");
@@ -414,7 +394,7 @@ public class Project {
         System.out.printf("Overall attendance now %.2f%%%n", s.attendancePercent());
     }
 
-    // ----- Input helpers (methods) -----
+
     static String readLine(String prompt) {
         System.out.print(prompt);
         return sc.nextLine().trim();
